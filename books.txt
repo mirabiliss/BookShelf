@@ -1,0 +1,11 @@
+Charlotte Bronte "Jane Eyre" 1847 347 ISBN637-078-8930-90-5 1 0 39500
+Stephen King "The Stand" 1978 823 ISBN400-782-4560-34-0 0 1 5670
+Scott Fitzgerald "The Great Gatsby" 1894 44 ISBN560-080-0430-02-1 1 1 7890
+J.K. Rowling "Harry Potter" 1995 438 ISBN040-009-4830-00-1 0 1 26750
+J.R.R. Tolkien "The Hobbit" 1987 564 ISBN032-020-0230-03-0 1 1 1980
+Ray Bradbury "Fahrenheit 451" 1996 35 ISBN990-088-0770-65-4 0 0 7890
+Stephen King "The Shining" 1977 642 ISBN670-890-9080-38-6 0 1 3700
+Jane Austen "Pride and Prejudice" 1879 345 ISBN000-089-0000-00-2 0 0 14670
+Aldous Huxley "Brave new world" 1984 426 ISBN000-031-0000-13-7 0 1 5670
+George Orwell "Animal Farm" 1897 43 ISBN675-345-0987-00-8 0 0 980
+Markus Zusak "The book thief" 1983 123 ISBN006-042-1830-10-0 1 0 650

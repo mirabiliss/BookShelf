@@ -24,12 +24,13 @@ void MainWindow::writeToFile(const Book& book)
         qDebug() << "file isn't open\n";
         return;
     }
+
     QTextStream streamFile(&file);
 
     streamFile << book.author()->name() << " " << book.author()->surname() << " \"" \
                << book.title() << "\" " << book.yearOfPublishment() << " " << book.pages() \
                << " " << book.ISBN() << " " << book.illustrations() << " " << book.hardCover() \
-               << book.editionSize() << "\n";
+               << " " << book.editionSize() << "\n";
 
     file.close();
 }
