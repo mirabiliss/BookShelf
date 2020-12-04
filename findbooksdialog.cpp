@@ -1,28 +1,38 @@
 #include "findbooksdialog.h"
 #include "ui_findbooksdialog.h"
 
-FindBooksDialog::FindBooksDialog(QWidget *parent) :
+FindBooksDialog::FindBooksDialog(QVector<Book*> books, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FindBooksDialog)
 {
     ui->setupUi(this);
-    
-    ui->author_name_lineEdit->setVisible(false);
-    ui->author_surname_lineEdit->setVisible(false);
-    ui->title_lineEdit->setVisible(false);
-    ui->year_lineEdit->setVisible(false);
-    ui->min_pages_spinBox->setVisible(false);
-    ui->max_pages_spinBox->setVisible(false);
-    ui->isbn_lineEdit->setVisible(false);
-    ui->yes_illustrations_radioButton->setVisible(false);
-    ui->no_illustrations_radioButton->setVisible(false);
-    ui->yes_hard_covers_radioButton->setVisible(false);
-    ui->no_hard_covers_radioButton->setVisible(false);
-    ui->min_edition_size_spinBox->setVisible(false);
-    ui->max_edition_size_spinBox->setVisible(false);
-    
-    connect(ui->find_pushButton, SIGNAL(clicked()), this, SLOT(find()));
-    
+    this->setWindowTitle("BookShelf");
+
+//    this->d = new DisplayWindow;
+//    connect(d, SIGNAL(displaywindow(QVector<Book>, QRect)), this, SLOT(showDisplayWindow(QRect)));
+
+    // temporary books to work with
+    this->toFind = books;
+
+    // all given info
+    checkboxes = {
+        {{0, ui->author_checkBox}, {ui->author_name_lineEdit, ui->author_surname_lineEdit}},
+        {{1, ui->title_checkBox}, {ui->title_lineEdit, new QWidget()}},
+        {{2, ui->year_checkBox}, {ui->year_spinBox, new QWidget()}},
+        {{3, ui->pages_checkBox}, {ui->min_pages_spinBox, ui->max_pages_spinBox}},
+        {{4, ui->isbn_checkBox}, {ui->isbn_lineEdit, new QWidget()}},
+        {{5, ui->illustrations_checkBox}, {ui->yes_illustrations_radioButton, ui->no_illustrations_radioButton}},
+        {{6, ui->hard_covers_checkBox}, {ui->yes_hard_covers_radioButton, ui->no_hard_covers_radioButton}},
+        {{7, ui->edition_size_checkBox}, {ui->min_edition_size_spinBox, ui->max_edition_size_spinBox}}
+    };
+
+    for (auto &it : checkboxes)
+    {
+        it.first->setVisible(false);
+        it.second->setVisible(false);
+    }
+    ui->pages_label->setVisible(false);
+    ui->edSize_label->setVisible(false);
 }
 
 FindBooksDialog::~FindBooksDialog()
@@ -30,28 +40,164 @@ FindBooksDialog::~FindBooksDialog()
     delete ui;
 }
 
-bool FindBooksDialog::checkIfFilled()
+bool isWidgetEmpty(QWidget* w)
 {
-    if (ui->author_name_lineEdit->text().isEmpty() || ui->author_surname_lineEdit->text().isEmpty() \
-            || ui->title_lineEdit->text().isEmpty() || ui->year_lineEdit->text().isEmpty() \
-            || (ui->min_pages_spinBox->text().isEmpty() || ui->max_pages_spinBox->text().isEmpty()) \
-            || (ui->min_edition_size_spinBox->text().isEmpty() || ui->max_edition_size_spinBox->text().isEmpty()) \
-            || ui->isbn_lineEdit->text().isEmpty()  \
-            || (ui->yes_illustrations_radioButton->isChecked() || ui->no_illustrations_radioButton->isChecked()) \
-            || (ui->yes_hard_covers_radioButton->isChecked() || ui->no_hard_covers_radioButton->isChecked()))
+    if (w->metaObject()->className() == QString("QWidget"))
         return false;
+    if (w->metaObject()->className() == QString("QLineEdit"))
+    {
+        return static_cast<QLineEdit*>(w)->text().isEmpty();
+    }
+    return false;
+}
+
+bool FindBooksDialog::supplied()
+{
+    // check if parameter checkbox is checked & then is info supplied
+    for (auto it = checkboxes.begin(); it != checkboxes.end(); it++)
+    {
+        auto checkbox = it.key();
+        auto values = it.value();
+
+        if (checkbox.second->isChecked())
+        {
+            if (isWidgetEmpty(values.first) && isWidgetEmpty(values.second))
+                return false;
+        }
+    }
     return true;
-    
 }
 
 void FindBooksDialog::find()
 {
-    if (checkIfFilled())
+    if (!supplied())
+    {
         (void) QMessageBox::information(this, tr("Not all checked values filled"),
             tr("Please supply all chosen information."), QMessageBox::Cancel);
+        return;
+    }
     else
     {
-        // check which checkboxes are checked and create parameters
+        // if current parameter is checked
+        for (auto it = checkboxes.begin(); it != checkboxes.end(); it++)
+        {
+            auto checkbox = it.key();
+
+            if (checkbox.second->isChecked())
+            {
+                switch (checkbox.first) {
+
+                // author
+                case 0:
+                {
+                    // read val
+                    Author* author = new Author(ui->author_name_lineEdit->text(), ui->author_surname_lineEdit->text());
+
+                    // delete what doesn't fit
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if ((toFind[i]->author()->name() != author->name()) || (toFind[i]->author()->surname() != author->surname()))
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // title
+                case 1:
+                {
+                    QString title = ui->title_lineEdit->text();
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (toFind[i]->title() != title)
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // year of publishment
+                case 2:
+                {
+                    int year = ui->year_spinBox->value();
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (toFind[i]->yearOfPublishment() != year)
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // pages
+                case 3:
+                {
+                    unsigned int min = ui->min_pages_spinBox->value();
+                    unsigned int max = ui->max_pages_spinBox->value();
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if ((toFind[i]->pages() < min) || (toFind[i]->pages() > max))
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // isbn
+                case 4:
+                {
+                    QString isbn = ui->isbn_lineEdit->text();
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if ((toFind[i]->ISBN() != isbn))
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // illustrations
+                case 5:
+                {
+                    bool img = ui->yes_illustrations_radioButton->isChecked() ? true : false;
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (toFind[i]->illustrations() != img)
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // hard covers
+                case 6:
+                {
+                    bool cov = ui->yes_hard_covers_radioButton->isChecked() ? true : false;
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (toFind[i]->hardCover() != cov)
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                // edition size
+                case 7:
+                {
+                    unsigned int min = ui->min_edition_size_spinBox->value();
+                    unsigned int max = ui->max_edition_size_spinBox->value();
+
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if ((toFind[i]->editionSize() < min) || (toFind[i]->editionSize() > max))
+                            toFind.remove(i);
+                    }
+                    break;
+                }
+
+                }
+            }
+        }
+        // return toSort to displaywindow & display it
     }
 }
 
@@ -85,10 +231,10 @@ void FindBooksDialog::on_year_checkBox_stateChanged(int arg1)
 {
     if (arg1 == 2) // checked
     {
-        ui->year_lineEdit->setVisible(true);
+        ui->year_spinBox->setVisible(true);
     } else if (arg1 == 0) // unchecked
     {
-        ui->year_lineEdit->setVisible(false);
+        ui->year_spinBox->setVisible(false);
     }
 }
 
@@ -164,10 +310,21 @@ void FindBooksDialog::on_edition_size_checkBox_stateChanged(int arg1)
 
 void FindBooksDialog::on_find_pushButton_clicked()
 {
-
+    this->find();
+    this->close();
+    emit displaywindow(this->toFind, this->geometry());
 }
 
 void FindBooksDialog::on_cancel_pushButton_clicked()
 {
+    this->find();
+    this->close();
+    // toFind has to be empty
+    emit displaywindow(this->toFind, this->geometry());
+}
 
+void FindBooksDialog::showFindDialod(QRect size)
+{
+    this->setGeometry(size);
+    this->show();
 }

@@ -13,7 +13,7 @@ public:
     Book(Author* _author, QString _title = "", int _year = 0, unsigned _pages = 0, \
          QString _isbn = "ISBN000-000-0000-00-0", bool _illustrations = false, bool _hardCover = false,\
          unsigned _edition = 0);
-    Book(Book& other);
+    Book(const Book& other);
 
     friend QTextStream &operator<<(QTextStream& output, const Book& book);
     friend QTextStream &operator>>(QTextStream& input, Book& book);

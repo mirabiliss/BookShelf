@@ -1,8 +1,11 @@
 #ifndef FINDBOOKSDIALOG_H
 #define FINDBOOKSDIALOG_H
 
-#include <QDialog>
 #include <QMessageBox>
+
+#include "author.h"
+#include "book.h"
+//#include <displaywindow.h>
 
 namespace Ui {
 class FindBooksDialog;
@@ -13,8 +16,11 @@ class FindBooksDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit FindBooksDialog(QWidget *parent = nullptr);
+    explicit FindBooksDialog(QVector<Book*> books, QWidget *parent = nullptr);
     ~FindBooksDialog();
+
+signals:
+    void displaywindow(QVector<Book*>, QRect);
 
 private slots:
     void on_author_checkBox_stateChanged(int arg1);
@@ -37,12 +43,18 @@ private slots:
 
     void on_cancel_pushButton_clicked();
 
-    
-    bool checkIfFilled();
+
+    void showFindDialod(QRect size);
+
+
+    bool supplied();
     void find();
     
 private:
     Ui::FindBooksDialog *ui;
+    QMap<QPair<int, QCheckBox*>, QPair<QWidget*, QWidget*> > checkboxes;
+    QVector<Book*> toFind;
+//    DisplayWindow *d;
 };
 
 #endif // FINDBOOKSDIALOG_H

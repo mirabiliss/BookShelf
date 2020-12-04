@@ -4,6 +4,9 @@
 #include <QException>
 #include <QString>
 
+#include "author.h"
+#include "book.h"
+
 class BookException : public QException
 {
     static const QString defaultExceptionMessage;
@@ -14,11 +17,12 @@ public:
 
 protected:
     QString _what;
-
 };
 
 
 // wrong year exception
+
+// book user wants to add already exists
 
 // trown when operating with empty list
 class EmptyBookListException : BookException

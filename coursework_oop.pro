@@ -12,20 +12,24 @@ SOURCES += \
     author.cpp \
     book.cpp \
     bookexception.cpp \
+    displaywindow.cpp \
     findbooksdialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainmenu.cpp
 
 HEADERS += \
     author.h \
     book.h \
     bookexception.h \
+    displaywindow.h \
     findbooksdialog.h \
-    mainwindow.h
+    mainmenu.h
 
 FORMS += \
+    displaywindow.ui \
     findbooksdialog.ui \
-    mainwindow.ui
+    mainmenu.ui \
+    tmp.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

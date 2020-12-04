@@ -24,7 +24,7 @@ Book::Book(Author* _author, QString _title, int _year, unsigned _pages, QString 
     this->setEditionSize(_edition);
 }
 
-Book::Book(Book &other)
+Book::Book(const Book &other)
 {
     *this = other;
 }
@@ -136,26 +136,41 @@ QTextStream& operator<<(QTextStream& output, const Book& book)
 
 QTextStream& operator>>(QTextStream& input, Book& book)
 {
-    QString name, surname, tmpStr;
-    int tmpNum;
+    QString name, surname, title, isbn;
+    int year, illustrations, covers;
+    unsigned pages, edSize;
+
 /*    if (!input.Ok)*/ {
         input >> name;
         input >> surname;
         book.setAuthor(new Author(name, surname));
-        input >> tmpStr;
-        book.setTitle(tmpStr);
-        input >> tmpNum;
-        book.setYearOfPublishment(tmpNum);
-        input >> tmpNum;
-        book.setPages(tmpNum);
-        input >> tmpStr;
-        book.setISBN(tmpStr);
-        input >> tmpNum;
-        book.setIllustrations(tmpNum);
-        input >> tmpNum;
-        book.setHardCover(tmpNum);
-        input >> tmpNum;
-        book.setEditionSize(tmpNum);
+
+        char c;
+        input >> c;
+        if (c == '"')
+        {
+            title += c;
+            input >> c;
+            while (c != '"')
+            {
+                title += c;
+                input >> c;
+            }
+        }
+        book.setTitle(title);
+        input >> year;
+        book.setYearOfPublishment(year);
+        input >> pages;
+        book.setPages(pages);
+        input >> isbn;
+        book.setISBN(isbn);
+        input >> illustrations;
+        book.setIllustrations(illustrations);
+        input >> covers;
+        book.setHardCover(covers);
+        input >> edSize;
+        book.setEditionSize(edSize);
     }
     return input;
 }
+
