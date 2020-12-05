@@ -8,9 +8,6 @@ FindBooksDialog::FindBooksDialog(QVector<Book*> books, QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("BookShelf");
 
-//    this->d = new DisplayWindow;
-//    connect(d, SIGNAL(displaywindow(QVector<Book>, QRect)), this, SLOT(showDisplayWindow(QRect)));
-
     // temporary books to work with
     this->toFind = books;
 
@@ -91,7 +88,7 @@ void FindBooksDialog::find()
                 case 0:
                 {
                     // read val
-                    Author* author = new Author(ui->author_name_lineEdit->text(), ui->author_surname_lineEdit->text());
+                    Author* author = new Author(new QString(ui->author_name_lineEdit->text()), new QString(ui->author_surname_lineEdit->text()));
 
                     // delete what doesn't fit
                     for (int i = 0; i < toFind.size(); i++)
@@ -106,12 +103,28 @@ void FindBooksDialog::find()
                 case 1:
                 {
                     QString title = ui->title_lineEdit->text();
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if (toFind[i]->title() != title)
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -119,12 +132,29 @@ void FindBooksDialog::find()
                 case 2:
                 {
                     int year = ui->year_spinBox->value();
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if (toFind[i]->yearOfPublishment() != year)
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
+
                     break;
                 }
 
@@ -133,12 +163,28 @@ void FindBooksDialog::find()
                 {
                     unsigned int min = ui->min_pages_spinBox->value();
                     unsigned int max = ui->max_pages_spinBox->value();
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if ((toFind[i]->pages() < min) || (toFind[i]->pages() > max))
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -146,11 +192,28 @@ void FindBooksDialog::find()
                 case 4:
                 {
                     QString isbn = ui->isbn_lineEdit->text();
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
+
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if ((toFind[i]->ISBN() != isbn))
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -158,12 +221,28 @@ void FindBooksDialog::find()
                 case 5:
                 {
                     bool img = ui->yes_illustrations_radioButton->isChecked() ? true : false;
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if (toFind[i]->illustrations() != img)
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -171,12 +250,28 @@ void FindBooksDialog::find()
                 case 6:
                 {
                     bool cov = ui->yes_hard_covers_radioButton->isChecked() ? true : false;
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if (toFind[i]->hardCover() != cov)
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -185,12 +280,28 @@ void FindBooksDialog::find()
                 {
                     unsigned int min = ui->min_edition_size_spinBox->value();
                     unsigned int max = ui->max_edition_size_spinBox->value();
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if ((toFind[i]->editionSize() < min) || (toFind[i]->editionSize() > max))
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (i != posToRemove[k])
+                        {
+                            tmp.push_back(toFind[i]);
+                        }
+                        else
+                            k++;
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -312,7 +423,7 @@ void FindBooksDialog::on_find_pushButton_clicked()
 {
     this->find();
     this->close();
-    emit displaywindow(this->toFind, this->geometry());
+    emit finddialog(this->toFind, this->geometry());
 }
 
 void FindBooksDialog::on_cancel_pushButton_clicked()
@@ -320,7 +431,7 @@ void FindBooksDialog::on_cancel_pushButton_clicked()
     this->find();
     this->close();
     // toFind has to be empty
-    emit displaywindow(this->toFind, this->geometry());
+    emit finddialog(this->toFind, this->geometry());
 }
 
 void FindBooksDialog::showFindDialod(QRect size)

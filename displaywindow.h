@@ -12,6 +12,8 @@
 #include <QInputDialog>
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
+#include <algorithm>
 
 #include "book.h"
 #include "findbooksdialog.h"
@@ -29,8 +31,7 @@ public:
     ~DisplayWindow();
 
 signals:
-    void finddialog(QVector<Book> found, QRect);
-    // "add" dialog
+    void displaywindow(QVector<Book*>, QRect);
 
 private slots:
     void on_actionSave_triggered();
@@ -49,15 +50,20 @@ private slots:
 
     void on_actionClear_triggered();
 
-
-    void showDisplayWindow(QRect size);
-
     void on_actionGet_books_from_file_triggered();
 
+    void on_actionBiggest_amount_of_pages_triggered();
+
+    void on_actionSmallest_amount_of_pages_biggest_edition_size_triggered();
+
+
+    void showFindDialog(QVector<Book*>, QRect size);
+
 private:
-    void writeToFile(const Book &book);
-    void readFromFile();
-    void sort();
+    void writeToFile(Book &book);
+    bool readFromFile();
+    void display(QVector<Book*> vec);
+    QString getParameter();
 
 private:
     Ui::DisplayWindow *ui;

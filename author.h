@@ -7,20 +7,20 @@ class Author
 {
 public:
     Author();
-    Author(QString _name, QString _surname);
+    Author(QString* name, QString* surname);
     Author(Author& other);
 
     friend bool operator==(const Author& first, const Author& second);
 
-    QString name() const;
-    void setName(const QString &name);
+    QString* name();
+    void setName(QString* name);
 
-    QString surname() const;
-    void setSurname(const QString &surname);
+    QString* surname();
+    void setSurname(QString* surname);
 
 private:
-    QString name_;
-    QString surname_;
+    QString *name_;
+    QString *surname_;
 };
 
 #endif // AUTHOR_H
