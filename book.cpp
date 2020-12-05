@@ -2,17 +2,17 @@
 
 Book::Book()
 {
-    this->setAuthor(new Author("", ""));
-    this->setTitle("");
+    this->setAuthor(new Author(new QString(""), new QString("")));
+    this->setTitle(new QString(""));
     this->setYearOfPublishment(0);
     this->setPages(0);
-    this->setISBN("");
+    this->setISBN(new QString(""));
     this->setIllustrations(false);
     this->setHardCover(false);
     this->setEditionSize(0);
 }
 
-Book::Book(Author* _author, QString _title, int _year, unsigned _pages, QString _isbn, bool _illustrations, bool _hardCover, unsigned _edition)
+Book::Book(Author* _author, QString* _title, int _year, unsigned _pages, QString* _isbn, bool _illustrations, bool _hardCover, unsigned _edition)
 {
     this->setAuthor(_author);
     this->setTitle(_title);
@@ -24,12 +24,12 @@ Book::Book(Author* _author, QString _title, int _year, unsigned _pages, QString 
     this->setEditionSize(_edition);
 }
 
-Book::Book(const Book &other)
+Book::Book(Book &other)
 {
     *this = other;
 }
 
-Book &Book::operator=(const Book &other)
+Book &Book::operator=(Book &other)
 {
 //    if (*this != other)
     {
@@ -55,12 +55,12 @@ void Book::setAuthor(Author *author)
     author_ = author;
 }
 
-QString Book::title() const
+QString* Book::title()
 {
     return title_;
 }
 
-void Book::setTitle(const QString &title)
+void Book::setTitle(QString* title)
 {
     title_ = title;
 }
@@ -80,17 +80,17 @@ unsigned Book::pages() const
     return pages_;
 }
 
-void Book::setPages(const unsigned &pages)
+void Book::setPages(const unsigned pages)
 {
     pages_ = pages;
 }
 
-QString Book::ISBN() const
+QString* Book::ISBN()
 {
     return ISBN_;
 }
 
-void Book::setISBN(const QString &ISBN)
+void Book::setISBN(QString* ISBN)
 {
     ISBN_ = ISBN;
 }
@@ -120,12 +120,12 @@ unsigned Book::editionSize() const
     return editionSize_;
 }
 
-void Book::setEditionSize(const unsigned &editionSize)
+void Book::setEditionSize(const unsigned editionSize)
 {
     editionSize_ = editionSize;
 }
 
-QTextStream& operator<<(QTextStream& output, const Book& book)
+QTextStream& operator<<(QTextStream& output, Book& book)
 {
     output << book.author_->name() << " " << book.author_->surname() << ":\t'" << \
               book.title() << "'\t" << book.yearOfPublishment() << "y.\t" << book.pages() << \
@@ -136,41 +136,51 @@ QTextStream& operator<<(QTextStream& output, const Book& book)
 
 QTextStream& operator>>(QTextStream& input, Book& book)
 {
-    QString name, surname, title, isbn;
+    QString *name = new QString(""), *surname = new QString(""), *title = new QString(""), *isbn = new QString("");
     int year, illustrations, covers;
     unsigned pages, edSize;
 
-/*    if (!input.Ok)*/ {
-        input >> name;
-        input >> surname;
-        book.setAuthor(new Author(name, surname));
+        input >> *name;
+        input >> *surname;
 
+        book.setAuthor(new Author(name, surname));
         char c;
-        input >> c;
-        if (c == '"')
-        {
-            title += c;
+
+        bool reading = false;
+        while (true) {
             input >> c;
-            while (c != '"')
-            {
-                title += c;
-                input >> c;
+            if (reading) {
+                if (c == '\"')
+                {
+                    reading = false;
+                    break;
+                }
+                else title += c;
+            }
+            else {
+                if (c == '\"') reading = true;
             }
         }
         book.setTitle(title);
+
         input >> year;
         book.setYearOfPublishment(year);
+
         input >> pages;
         book.setPages(pages);
-        input >> isbn;
+
+        input >> *isbn;
         book.setISBN(isbn);
+
         input >> illustrations;
         book.setIllustrations(illustrations);
+
         input >> covers;
         book.setHardCover(covers);
+
         input >> edSize;
         book.setEditionSize(edSize);
-    }
+
     return input;
 }
 

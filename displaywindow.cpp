@@ -11,7 +11,7 @@ DisplayWindow::DisplayWindow(QWidget *parent) :
     this->setFixedSize(this->size());
 
     findDialog = new FindBooksDialog(this->books);
-    connect(findDialog, SIGNAL(finddialog(QRect)), this, SLOT(showFindDialog(QRect)));
+    connect(findDialog, SIGNAL(finddialog(QVector<Book*>, QRect)), this, SLOT(showFindDialog(QVector<Book*>, QRect)));
 }
 
 DisplayWindow::~DisplayWindow()
@@ -19,14 +19,39 @@ DisplayWindow::~DisplayWindow()
     delete ui;
 }
 
-
-void DisplayWindow::showDisplayWindow(QRect size)
+void DisplayWindow::showFindDialog(QVector<Book*> books, QRect size)
 {
+    // bboooookkkksss
     this->setGeometry(size);
     this->show();
 }
 
-void DisplayWindow::writeToFile(const Book& book)
+void displaywindow(QVector<Book*>, QRect)
+{
+    // impement this
+}
+
+void DisplayWindow::display(QVector<Book*> vec)
+{
+    ui->tableWidget->clearContents();
+
+    ui->tableWidget->setRowCount(vec.size());
+    ui->tableWidget->setColumnCount(8);
+
+    for (int i = 0; i < vec.size(); i++) {
+        Book* book = vec[i];
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(book->author()->name() + QString(" ") + book->author()->surname()));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(*book->title()));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(book->yearOfPublishment()));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(book->pages()));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(*book->ISBN()));
+        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(book->illustrations()));
+        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(book->hardCover()));
+        ui->tableWidget->setItem(i, 7, new QTableWidgetItem(book->editionSize()));
+    }
+}
+
+void DisplayWindow::writeToFile(Book& book)
 {
     QString filename = "books.txt";
     QFile file(filename);
@@ -46,24 +71,22 @@ void DisplayWindow::writeToFile(const Book& book)
     file.close();
 }
 
-void DisplayWindow::readFromFile()
+bool DisplayWindow::readFromFile()
 {
     if (!this->books.isEmpty()){
         this->books.clear();
     }
-    QString filename = "books.txt";
+    QString filename = QDir::currentPath() + "/" + "books.txt";
     QFile file(filename);
 
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     if (!file.isOpen()){
         qDebug() << "file isn't open\n";
-        return;
+        return false;
     }
 
-
-    Book book;
-
     while (!file.atEnd()){
+        Book book;
         QByteArray line = file.readLine();
         QTextStream input(&line);
 
@@ -72,6 +95,7 @@ void DisplayWindow::readFromFile()
         this->books.push_back(&book);
     }
     file.close();
+    return true;
 }
 
 void DisplayWindow::sort()
@@ -101,41 +125,6 @@ void DisplayWindow::sort()
 
 
 }
-
-
-//    // QInputDialog with combobox
-//    bool ok;
-//    QString sortBy = QInputDialog::getText(this, "Choose parameter to be sorted by",\
-//                                           "Sort by: ", QLineEdit::Normal, "", &ok);
-
-
-//    if (ok && !sortBy.isEmpty())
-//    {
-////        sort(sortBy);
-//    }
-
-
-
-
-
-    // all individual tasks in find action, find by all parameters
-
-    // similar ui to findbooksdialog may be used for adding
-
-
-
-//    Book b;
-//    b.setAuthor(new Author("Jane", "Hutson"));
-//    b.setTitle("Title");
-//    b.setYearOfPublishment(2004);
-//    b.setPages(389);
-//    b.setISBN("ISBN401-080-0562-00-4");
-//    b.setIllustrations(false);
-//    b.setHardCover(true);
-//    b.setEditionSize(560);
-//    writeToFile(b);
-
-
 
 void DisplayWindow::on_actionSave_triggered()
 {
@@ -185,5 +174,16 @@ void DisplayWindow::on_actionClear_triggered()
 
 void DisplayWindow::on_actionGet_books_from_file_triggered()
 {
-    readFromFile();
+    if (readFromFile())
+        display(this->books);
+}
+
+void DisplayWindow::on_actionBiggest_amount_of_pages_triggered()
+{
+
+}
+
+void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_triggered()
+{
+
 }

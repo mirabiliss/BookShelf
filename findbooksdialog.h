@@ -20,7 +20,8 @@ public:
     ~FindBooksDialog();
 
 signals:
-    void displaywindow(QVector<Book*>, QRect);
+   // void displaywindow(QVector<Book*>, QRect);
+    void finddialog(QVector<Book*> found, QRect);
 
 private slots:
     void on_author_checkBox_stateChanged(int arg1);

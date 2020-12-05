@@ -10,13 +10,19 @@ MainMenu::MainMenu(QWidget *parent) :
     this->setWindowTitle("BookShelf");
 
     this->displayWindow = new DisplayWindow;
-    connect(displayWindow, SIGNAL(displaywindow(QRect)), this, SLOT(showDisplayWindow(QRect)));
+    connect(displayWindow, SIGNAL(displaywindow(QVector<Book*>, QRect)), this, SLOT(showDisplayWindow(QVector<Book*>, QRect)));
 }
 
 MainMenu::~MainMenu()
 {
     delete ui;
 }
+
+void MainMenu::showDisplayWindow(QVector<Book*>, QRect)
+{
+
+}
+
 
 void MainMenu::on_view_pushButton_clicked()
 {

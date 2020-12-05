@@ -20,6 +20,8 @@ public:
     ~MainMenu();
 
 private slots:
+    void showDisplayWindow(QVector<Book*>, QRect);
+
     void on_view_pushButton_clicked();
 
     void on_intro_pushButton_clicked();

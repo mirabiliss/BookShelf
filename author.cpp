@@ -2,11 +2,11 @@
 
 Author::Author()
 {
-    this->setName("");
-    this->setSurname("");
+    this->setName(new QString(""));
+    this->setSurname(new QString(""));
 }
 
-Author::Author(QString name, QString surname)
+Author::Author(QString* name, QString* surname)
 {
     this->setName(name);
     this->setSurname(surname);
@@ -18,27 +18,27 @@ Author::Author(Author &other)
     this->setSurname(other.surname());
 }
 
-QString Author::name() const
+QString* Author::name()
 {
     return name_;
 }
 
-void Author::setName(const QString &name)
+void Author::setName(QString* name)
 {
     name_ = name;
 }
 
-QString Author::surname() const
+QString* Author::surname()
 {
     return surname_;
 }
 
-void Author::setSurname(const QString &surname)
+void Author::setSurname(QString* surname)
 {
     surname_ = surname;
 }
 
-bool operator==(const Author& first, const Author& second)
+bool operator==(Author& first, Author& second)
 {
     if (first.name() == second.name() && first.surname() == second.surname())
         return true;

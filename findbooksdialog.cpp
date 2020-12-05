@@ -91,7 +91,7 @@ void FindBooksDialog::find()
                 case 0:
                 {
                     // read val
-                    Author* author = new Author(ui->author_name_lineEdit->text(), ui->author_surname_lineEdit->text());
+                    Author* author = new Author(new QString(ui->author_name_lineEdit->text()), new QString(ui->author_surname_lineEdit->text()));
 
                     // delete what doesn't fit
                     for (int i = 0; i < toFind.size(); i++)
@@ -312,7 +312,7 @@ void FindBooksDialog::on_find_pushButton_clicked()
 {
     this->find();
     this->close();
-    emit displaywindow(this->toFind, this->geometry());
+    emit finddialog(this->toFind, this->geometry());
 }
 
 void FindBooksDialog::on_cancel_pushButton_clicked()
@@ -320,7 +320,7 @@ void FindBooksDialog::on_cancel_pushButton_clicked()
     this->find();
     this->close();
     // toFind has to be empty
-    emit displaywindow(this->toFind, this->geometry());
+    emit finddialog(this->toFind, this->geometry());
 }
 
 void FindBooksDialog::showFindDialod(QRect size)
