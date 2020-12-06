@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    addbookdialog.cpp \
     author.cpp \
     book.cpp \
     bookexception.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
     mainmenu.cpp
 
 HEADERS += \
+    addbookdialog.h \
     author.h \
     book.h \
     bookexception.h \
@@ -26,6 +28,7 @@ HEADERS += \
     mainmenu.h
 
 FORMS += \
+    addbookdialog.ui \
     displaywindow.ui \
     findbooksdialog.ui \
     mainmenu.ui \

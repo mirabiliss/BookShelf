@@ -17,6 +17,7 @@
 
 #include "book.h"
 #include "findbooksdialog.h"
+#include "addbookdialog.h"
 
 namespace Ui {
 class DisplayWindow;
@@ -58,6 +59,7 @@ private slots:
 
 
     void showFindDialog(QVector<Book*>, QRect size);
+    void showAddDialog(Book *book);
 
 private:
     void writeToFile(Book &book);
@@ -70,6 +72,7 @@ private:
     QVector<Book*> books;
     QVector<Book*> foundBooks;
     FindBooksDialog *findDialog;
+    AddBookDialog *addBookDialog;
 };
 
 #endif // DISPLAYWINDOW_H

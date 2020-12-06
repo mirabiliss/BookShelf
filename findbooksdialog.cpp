@@ -30,6 +30,8 @@ FindBooksDialog::FindBooksDialog(QVector<Book*> books, QWidget *parent) :
     }
     ui->pages_label->setVisible(false);
     ui->edSize_label->setVisible(false);
+
+    // set second spinbox (pages, edition) maximum value among books
 }
 
 FindBooksDialog::~FindBooksDialog()
@@ -89,13 +91,33 @@ void FindBooksDialog::find()
                 {
                     // read val
                     Author* author = new Author(new QString(ui->author_name_lineEdit->text()), new QString(ui->author_surname_lineEdit->text()));
+                    QVector<int> posToRemove;
+                    QVector<Book*> tmp;
 
-                    // delete what doesn't fit
                     for (int i = 0; i < toFind.size(); i++)
                     {
                         if ((toFind[i]->author()->name() != author->name()) || (toFind[i]->author()->surname() != author->surname()))
-                            toFind.remove(i);
+                            posToRemove.push_back(i);
                     }
+                    // store what satisfies the condition
+                    int k = 0;
+                    for (int i = 0; i < toFind.size(); i++)
+                    {
+                        if (k < posToRemove.size())
+                        {
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
+                        }
+                        else
+                            tmp.push_back(toFind[i]);
+                    }
+
+                    toFind = tmp;
+
                     break;
                 }
 
@@ -115,12 +137,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
-                        {
-                            tmp.push_back(toFind[i]);
+                        if (k < posToRemove.size())
+                            {
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -144,12 +171,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -171,16 +203,23 @@ void FindBooksDialog::find()
                         if ((toFind[i]->pages() < min) || (toFind[i]->pages() > max))
                             posToRemove.push_back(i);
                     }
+
                     // store what satisfies the condition
                     int k = 0;
+
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -204,12 +243,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -233,12 +277,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -262,12 +311,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -292,12 +346,17 @@ void FindBooksDialog::find()
                     int k = 0;
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if (i != posToRemove[k])
+                        if (k < posToRemove.size())
                         {
-                            tmp.push_back(toFind[i]);
+                            if (i != posToRemove[k])
+                            {
+                                tmp.push_back(toFind[i]);
+                            }
+                            else
+                                k++;
                         }
                         else
-                            k++;
+                            tmp.push_back(toFind[i]);
                     }
 
                     toFind = tmp;
@@ -308,7 +367,6 @@ void FindBooksDialog::find()
                 }
             }
         }
-        // return toSort to displaywindow & display it
     }
 }
 
@@ -428,9 +486,7 @@ void FindBooksDialog::on_find_pushButton_clicked()
 
 void FindBooksDialog::on_cancel_pushButton_clicked()
 {
-    this->find();
     this->close();
-    // toFind has to be empty
     emit finddialog(this->toFind, this->geometry());
 }
 

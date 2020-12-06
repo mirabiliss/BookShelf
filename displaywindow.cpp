@@ -23,13 +23,27 @@ void DisplayWindow::showFindDialog(QVector<Book*> books, QRect size)
     if (books.isEmpty())
     {
         QMessageBox::information(this, "Ooooops...", "Books with given parameters were not found");
+        display(this->books);
+    }
+    else
+    {
+        this->foundBooks = books;
+        display(this->foundBooks);
     }
 
     this->setGeometry(size);
     this->show();
+}
 
-    this->foundBooks = books;
-    display(this->foundBooks);
+void DisplayWindow::showAddDialog(Book *book)
+{
+    if (!book)
+        QMessageBox::information(this, "Ooooops...", "Book was not added");
+    else
+        this->books.push_back(book);
+
+    this->show();
+    display(this->books);
 }
 
 void DisplayWindow::display(QVector<Book*> vec)
@@ -135,7 +149,10 @@ void DisplayWindow::on_actionClose_triggered()
 
 void DisplayWindow::on_actionAdd_triggered()
 {
+    addBookDialog = new AddBookDialog();
+    connect(addBookDialog, SIGNAL(addbookdialog(Book*)), this, SLOT(showAddDialog(Book*)));
 
+    addBookDialog->show();
 }
 
 void DisplayWindow::on_actionRemove_triggered()
@@ -145,6 +162,12 @@ void DisplayWindow::on_actionRemove_triggered()
 
 void DisplayWindow::on_actionFind_triggered()
 {
+    if (this->books.isEmpty())
+    {
+        QMessageBox::information(this, "Ooooops...", "Seems like no books are available");
+        return;
+    }
+
     findDialog = new FindBooksDialog(this->books);
     connect(findDialog, SIGNAL(finddialog(QVector<Book*>, QRect)), this, SLOT(showFindDialog(QVector<Book*>, QRect)));
 
@@ -157,7 +180,6 @@ void DisplayWindow::on_actionFind_triggered()
     findDialog->setSizePolicy(this->sizePolicy());
     findDialog->setGeometry(this->geometry());
     findDialog->show();
-    // glue them together
 }
 
 bool byAuthor(Book* first, Book* second)
@@ -218,7 +240,8 @@ QString DisplayWindow::getParameter()
 
 void DisplayWindow::on_actionSort_by_triggered()
 {
-    this->foundBooks = this->books;
+    if (this->foundBooks.isEmpty())
+        this->foundBooks = this->books;
 
     QString parameter = getParameter();
 
