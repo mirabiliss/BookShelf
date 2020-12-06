@@ -134,12 +134,12 @@ bool DisplayWindow::readFromFile()
 
 void DisplayWindow::on_actionSave_triggered()
 {
-
+    // save
 }
 
 void DisplayWindow::on_actionSave_as_triggered()
 {
-
+    // save
 }
 
 void DisplayWindow::on_actionClose_triggered()
@@ -157,7 +157,7 @@ void DisplayWindow::on_actionAdd_triggered()
 
 void DisplayWindow::on_actionRemove_triggered()
 {
-
+    // remove
 }
 
 void DisplayWindow::on_actionFind_triggered()
@@ -181,6 +181,9 @@ void DisplayWindow::on_actionFind_triggered()
     findDialog->setGeometry(this->geometry());
     findDialog->show();
 }
+
+
+// comparators
 
 bool byAuthor(Book* first, Book* second)
 {
@@ -222,9 +225,9 @@ bool byEditionSize(Book* first, Book* second)
     return (first->editionSize() < second->editionSize());
 }
 
+
 QString DisplayWindow::getParameter()
 {
-    // getting from user parameter to be sorted by
     QStringList items;
     items << "Author";
     items << "Title";
@@ -243,11 +246,13 @@ void DisplayWindow::on_actionSort_by_triggered()
     if (this->foundBooks.isEmpty())
         this->foundBooks = this->books;
 
+    // getting parameter from user to be sorted by
     QString parameter = getParameter();
 
+    // check if valid
     if (foundBooks.isEmpty())
     {
-        qDebug() << "found nothing";
+        qDebug() << "No books were found";
         return;
     }
 
@@ -298,6 +303,8 @@ void DisplayWindow::on_actionClear_triggered()
     ui->tableWidget->clear();
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setColumnCount(0);
+    this->books.clear();
+    this->foundBooks.clear();
 }
 
 void DisplayWindow::on_actionGet_books_from_file_triggered()
@@ -308,10 +315,34 @@ void DisplayWindow::on_actionGet_books_from_file_triggered()
 
 void DisplayWindow::on_actionBiggest_amount_of_pages_triggered()
 {
+    // most amount of pages & with illustrations
 
+    QVector<Book*> tmp = this->books;
+    QVector<Book*> res;
+
+    std::sort(tmp.begin(), tmp.end(), byPages);
+
+    for (int i = tmp.size()-1; i >= 0; i--)
+    {
+        if (tmp[i]->illustrations() == true)
+        {
+            if (res.isEmpty())
+                res.push_back(tmp[i]);
+            else
+                if (tmp[i]->pages() == res[0]->pages())
+                    res.push_back(tmp[i]);
+        }
+        else
+            if (!res.isEmpty())
+                break;
+    }
+
+    this->foundBooks = res;
+    display(this->foundBooks);
 }
 
 void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_triggered()
 {
+    // among books of same year find one with least pages & biggest edition
 
 }

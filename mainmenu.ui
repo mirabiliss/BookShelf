@@ -458,8 +458,8 @@
   <widget class="QPushButton" name="view_pushButton">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>160</y>
+     <x>580</x>
+     <y>210</y>
      <width>361</width>
      <height>61</height>
     </rect>
@@ -477,8 +477,8 @@
   <widget class="QPushButton" name="intro_pushButton">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>250</y>
+     <x>580</x>
+     <y>300</y>
      <width>361</width>
      <height>61</height>
     </rect>
@@ -497,9 +497,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>60</y>
-     <width>491</width>
-     <height>471</height>
+     <y>30</y>
+     <width>501</width>
+     <height>541</height>
     </rect>
    </property>
    <property name="title">
@@ -508,16 +508,16 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>40</y>
-      <width>361</width>
-      <height>20</height>
+      <x>40</x>
+      <y>70</y>
+      <width>411</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Serif</family>
-      <pointsize>18</pointsize>
+      <pointsize>20</pointsize>
      </font>
     </property>
     <property name="text">
@@ -527,8 +527,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>410</y>
+      <x>80</x>
+      <y>450</y>
       <width>341</width>
       <height>31</height>
      </rect>
@@ -546,10 +546,10 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>100</y>
-      <width>471</width>
-      <height>241</height>
+      <x>50</x>
+      <y>150</y>
+      <width>411</width>
+      <height>141</height>
      </rect>
     </property>
     <property name="font">
@@ -559,13 +559,11 @@
      </font>
     </property>
     <property name="text">
-     <string>- Simply add and manage your list of books, 
+     <string>- Simply add and manage your books, 
 
 - find what you need in a moment, 
 
-- delete books you don't need anymore 
-
-   and lots of other features!</string>
+- delete books you don't need anymore</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -574,8 +572,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>370</y>
+      <x>130</x>
+      <y>410</y>
       <width>241</width>
       <height>41</height>
      </rect>
@@ -591,6 +589,25 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>310</y>
+      <width>291</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Serif</family>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string> and lots of other features!</string>
     </property>
    </widget>
   </widget>

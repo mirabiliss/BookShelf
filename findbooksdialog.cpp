@@ -89,10 +89,10 @@ void FindBooksDialog::find()
                 // author
                 case 0:
                 {
-                    // read val
+                    // reading values
                     Author* author = new Author(new QString(ui->author_name_lineEdit->text()), new QString(ui->author_surname_lineEdit->text()));
-                    QVector<int> posToRemove;
-                    QVector<Book*> tmp;
+                    QVector<int> posToRemove; // to hold positions of elements which do not satisfy condition
+                    QVector<Book*> tmp;     // to hold elements which satisfy condition
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
