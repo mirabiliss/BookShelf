@@ -15,37 +15,40 @@ public:
     BookException();
     BookException(const QString& what);
 
+    const char* what() const noexcept override { return what_.toLocal8Bit().data(); };
+
 protected:
-    QString _what;
+    QString what_;
 };
 
-
-// wrong year exception
-
-// book user wants to add already exists
-
-// trown when operating with empty list
-class EmptyBookListException : BookException
+// trown when operating with empty vector of books
+class NoBooksException : public BookException
 {
-
+public:
+    const char* what() const noexcept override
+    {
+        return "Seems like no books are available \nPlease add some books first.";
+    }
 };
 
-// thrown when file didn't open correctly?
-class LoadingFromFileException : public BookException
+// thrown when file didn't open correctly
+class FileNotOpenException : public BookException
 {
-    //
+public:
+    const char * what() const noexcept
+    {
+        return "Cannot open file! Please, try again.";
+    }
 };
 
-// thrown when setting data of different type (when setting from user input)
-class InvalidDataPassedException : public BookException
-{
-    //
-};
-
-// thrown when can't save to file?
+// thrown when can't save to file
 class SaveException : public BookException
 {
-
+public:
+    const char * what() const noexcept
+    {
+        return "Cannot save books to file! \nPlease, try again.";
+    }
 };
 
 #endif // BOOKEXCEPTION_H

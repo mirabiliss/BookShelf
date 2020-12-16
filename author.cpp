@@ -18,7 +18,7 @@ Author::Author(Author &other)
     this->setSurname(other.surname());
 }
 
-QString* Author::name()
+QString* Author::name() const
 {
     return name_;
 }
@@ -28,7 +28,7 @@ void Author::setName(QString* name)
     name_ = name;
 }
 
-QString* Author::surname()
+QString* Author::surname() const
 {
     return surname_;
 }
@@ -38,9 +38,9 @@ void Author::setSurname(QString* surname)
     surname_ = surname;
 }
 
-bool operator==(Author& first, Author& second)
+bool operator==(const Author& first, const Author& second)
 {
-    if (first.name() == second.name() && first.surname() == second.surname())
+    if (*first.name() == *second.name() && *first.surname() == *second.surname())
         return true;
     return false;
 }

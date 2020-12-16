@@ -3,11 +3,10 @@
 const QString BookException::defaultExceptionMessage = "exception";
 BookException::BookException()
 {
-    _what = defaultExceptionMessage;
+    what_ = "";
 }
 
-BookException::BookException(const QString &msg) :
-    _what(msg)
+BookException::BookException(const QString &what)
 {
+    what_ = what;
 }
-

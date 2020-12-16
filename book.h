@@ -18,8 +18,6 @@ public:
     friend QTextStream &operator<<(QTextStream& output, Book& book);
     friend QTextStream &operator>>(QTextStream& input, Book& book);
     Book& operator=(Book& other);
-//    friend bool operator!=(const Book& ths, const Book& other);
-
 
     Author *author() const;
     void setAuthor(Author *author);

@@ -14,10 +14,13 @@
 #include <QTextStream>
 #include <QDir>
 #include <algorithm>
+#include <QAbstractButton>
+#include <QToolBar>
 
 #include "book.h"
 #include "findbooksdialog.h"
 #include "addbookdialog.h"
+#include "bookexception.h"
 
 namespace Ui {
 class DisplayWindow;
@@ -37,8 +40,6 @@ signals:
 private slots:
     void on_actionSave_triggered();
 
-    void on_actionSave_as_triggered();
-
     void on_actionClose_triggered();
 
     void on_actionAdd_triggered();
@@ -57,9 +58,12 @@ private slots:
 
     void on_actionSmallest_amount_of_pages_biggest_edition_size_triggered();
 
+    void on_tableWidget_cellDoubleClicked(int row, int column);
 
     void showFindDialog(QVector<Book*>, QRect size);
     void showAddDialog(Book *book);
+
+    void removeBook();
 
 private:
     void writeToFile(Book &book);
@@ -73,6 +77,7 @@ private:
     QVector<Book*> foundBooks;
     FindBooksDialog *findDialog;
     AddBookDialog *addBookDialog;
+    int posToDelete;
 };
 
 #endif // DISPLAYWINDOW_H

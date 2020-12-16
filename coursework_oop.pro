@@ -31,8 +31,7 @@ FORMS += \
     addbookdialog.ui \
     displaywindow.ui \
     findbooksdialog.ui \
-    mainmenu.ui \
-    tmp.ui
+    mainmenu.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -40,3 +39,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES +=
+
+RESOURCES += \
+    assets.qrc

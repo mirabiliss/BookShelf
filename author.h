@@ -12,10 +12,10 @@ public:
 
     friend bool operator==(const Author& first, const Author& second);
 
-    QString* name();
+    QString* name() const;
     void setName(QString* name);
 
-    QString* surname();
+    QString* surname() const;
     void setSurname(QString* surname);
 
 private:

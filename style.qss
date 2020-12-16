@@ -1,0 +1,36 @@
+QDialog, #centralwidget {
+    border-image: url(:/images/dark-5.jpg);
+}
+
+#menubar {
+    background: rgba(10, 74, 84, 225);
+}
+
+QPushButton, QHeaderView::section, QHeaderView, QTableCornerButton {
+    background: rgba(10, 74, 84, 91);
+}
+
+QLabel, QRadioButton {
+    color: rgba(232, 247, 252, 225);
+}
+
+QCheckBox {
+    color: rgba(232, 247, 252, 225);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+QTableWidget {
+    background: rgba(36, 36, 36, 91);
+    font-size: 16px;
+    font-family: 'Serif', serif;
+}
+
+QTableWidget::item {
+    color: rgba(232, 247, 252, 225);
+}
+
+QLineEdit, QSpinBox, QPushButton, QComboBox {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 #76c2cf, stop: 0.5 #61a2ad,
+                                      stop: 0.6 #61a2ad, stop:1 #76c2cf);
+}

@@ -11,6 +11,21 @@ DisplayWindow::DisplayWindow(QWidget *parent) :
     this->setFixedSize(this->size());
 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget->horizontalHeader()->stretchLastSection();
+
+//    QPixmap newpix("new.png");
+//    QPixmap openpix("../coursework_oop/folder.png");
+//    QPixmap quitpix("quit.png");
+
+//    QToolBar *toolbar = addToolBar("main toolbar");
+//    QAction *add = toolbar->addAction(QIcon(newpix), "Add...");
+//    QAction *getFromFile = toolbar->addAction(QIcon(openpix), "Get from file");
+//    toolbar->addSeparator();
+//    QAction *quit = toolbar->addAction(QIcon(quitpix), "Quit");
+
+//    connect(quit, &QAction::triggered, qApp, &QApplication::quit);
+//    connect(add, &QAction::triggered, qApp, SLOT(on_actionAdd_triggered));
+//    connect(getFromFile, &QAction::triggered, qApp, SLOT(on_actionGet_books_from_file_triggered));
 }
 
 DisplayWindow::~DisplayWindow()
@@ -22,7 +37,7 @@ void DisplayWindow::showFindDialog(QVector<Book*> books, QRect size)
 {
     if (books.isEmpty())
     {
-        QMessageBox::information(this, "Ooooops...", "Books with given parameters were not found");
+        QMessageBox::warning(this, "Ooooops...", "Books with given parameters were not found");
         display(this->books);
     }
     else
@@ -38,7 +53,7 @@ void DisplayWindow::showFindDialog(QVector<Book*> books, QRect size)
 void DisplayWindow::showAddDialog(Book *book)
 {
     if (!book)
-        QMessageBox::information(this, "Ooooops...", "Book was not added");
+        QMessageBox::warning(this, "Ooooops...", "Book was not added");
     else
         this->books.push_back(book);
 
@@ -107,39 +122,69 @@ void DisplayWindow::writeToFile(Book& book)
 
 bool DisplayWindow::readFromFile()
 {
-    if (!this->books.isEmpty()){
-        this->books.clear();
+    try {
+        if (!this->books.isEmpty()){
+            this->books.clear();
+        }
+        QString filename = QDir::home().filePath("books.txt");
+        QFile file(filename);
+
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        if (!file.isOpen()){
+            throw FileNotOpenException();
+        }
+
+        while (!file.atEnd()){
+            Book *book = new Book;
+            QByteArray line = file.readLine();
+            QTextStream input(&line);
+
+            input >> *book;
+
+            this->books.push_back(book);
+        }
+        file.close();
+        this->foundBooks = this->books;
+
+        return true;
+
+    }  catch (FileNotOpenException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", e.what());
     }
-    QString filename = QDir::home().filePath("books.txt");
-    QFile file(filename);
-
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!file.isOpen()){
-        qDebug() << "file isn't open\n";
-        return false;
-    }
-
-    while (!file.atEnd()){
-        Book *book = new Book;
-        QByteArray line = file.readLine();
-        QTextStream input(&line);
-
-        input >> *book;
-
-        this->books.push_back(book);
-    }
-    file.close();
-    return true;
+    return false;
 }
 
 void DisplayWindow::on_actionSave_triggered()
 {
-    // save
-}
+    try {
 
-void DisplayWindow::on_actionSave_as_triggered()
-{
-    // save
+        bool saved = true;
+
+        QString filename = QDir::home().filePath("books.txt");
+        QFile file(filename);
+
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        if (!file.isOpen())
+        {
+            saved = false;
+            throw FileNotOpenException();
+        }
+
+        QTextStream output(&file);
+
+        for (int i = 0; i < this->books.size(); i++)
+        {
+            output << *books[i];
+        }
+
+        file.close();
+
+        if (saved) throw SaveException();
+    }  catch (SaveException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like we couldn't save books to file\nPlease try again.");
+    }
 }
 
 void DisplayWindow::on_actionClose_triggered()
@@ -157,29 +202,43 @@ void DisplayWindow::on_actionAdd_triggered()
 
 void DisplayWindow::on_actionRemove_triggered()
 {
-    // remove
+    try {
+        if (this->books.isEmpty())
+            throw NoBooksException();
+        this->posToDelete = QInputDialog::getInt(this, "Delete book", \
+                                                 "Enter position of the book you want to delete:\n", \
+                                                 0, 1, this->books.size()) - 1;
+        removeBook();
+    }  catch (NoBooksException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
+    }
 }
 
 void DisplayWindow::on_actionFind_triggered()
 {
-    if (this->books.isEmpty())
-    {
-        QMessageBox::information(this, "Ooooops...", "Seems like no books are available");
-        return;
+    try {
+        if (this->books.isEmpty())
+        {
+            throw NoBooksException();
+        }
+
+        findDialog = new FindBooksDialog(this->books);
+        connect(findDialog, SIGNAL(finddialog(QVector<Book*>, QRect)), this, SLOT(showFindDialog(QVector<Book*>, QRect)));
+
+        this->close();
+        ui->tableWidget->clear();
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(0);
+
+        findDialog->setSizePolicy(this->sizePolicy());
+        findDialog->setGeometry(this->geometry());
+        findDialog->show();
+
+    }  catch (NoBooksException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
     }
-
-    findDialog = new FindBooksDialog(this->books);
-    connect(findDialog, SIGNAL(finddialog(QVector<Book*>, QRect)), this, SLOT(showFindDialog(QVector<Book*>, QRect)));
-
-//    this->foundBooks.clear();
-    this->close();
-    ui->tableWidget->clear();
-    ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setColumnCount(0);
-
-    findDialog->setSizePolicy(this->sizePolicy());
-    findDialog->setGeometry(this->geometry());
-    findDialog->show();
 }
 
 
@@ -238,63 +297,71 @@ QString DisplayWindow::getParameter()
     items << "Have hard cover";
     items << "Edition size";
 
+    // if cancel was clicked - do not return a value
     return QInputDialog::getItem(this, "Choose parameter", "Choose parameter to be sorted by:", items);
 }
 
 void DisplayWindow::on_actionSort_by_triggered()
 {
-    if (this->foundBooks.isEmpty())
+    try {
+        if (this->books.isEmpty())
+            throw NoBooksException();
+
         this->foundBooks = this->books;
 
-    // getting parameter from user to be sorted by
-    QString parameter = getParameter();
+        // getting parameter from user to be sorted by
+        QString parameter = getParameter();
 
-    // check if valid
-    if (foundBooks.isEmpty())
-    {
-        qDebug() << "No books were found";
-        return;
-    }
+        // check if valid
+        if (foundBooks.isEmpty())
+        {
+            qDebug() << "No books were found";
+            return;
+        }
 
-    if (parameter == "Author")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byAuthor);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Title")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byTitle);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Year of publishment")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byYearOfPublishment);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Number of pages")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byPages);
-        display(this->foundBooks);
-    }
-    else if (parameter == "ISBN")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byISBN);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Have illustrations")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byIllustrations);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Have hard cover")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byCover);
-        display(this->foundBooks);
-    }
-    else if (parameter == "Edition size")
-    {
-        std::sort(foundBooks.begin(), foundBooks.end(), byEditionSize);
-        display(this->foundBooks);
+        if (parameter == "Author")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byAuthor);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Title")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byTitle);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Year of publishment")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byYearOfPublishment);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Number of pages")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byPages);
+            display(this->foundBooks);
+        }
+        else if (parameter == "ISBN")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byISBN);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Have illustrations")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byIllustrations);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Have hard cover")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byCover);
+            display(this->foundBooks);
+        }
+        else if (parameter == "Edition size")
+        {
+            std::sort(foundBooks.begin(), foundBooks.end(), byEditionSize);
+            display(this->foundBooks);
+        }
+    }  catch (NoBooksException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
     }
 }
 
@@ -315,34 +382,123 @@ void DisplayWindow::on_actionGet_books_from_file_triggered()
 
 void DisplayWindow::on_actionBiggest_amount_of_pages_triggered()
 {
-    // most amount of pages & with illustrations
+    try {
+        if (this->books.isEmpty())
+            throw NoBooksException();
 
-    QVector<Book*> tmp = this->books;
-    QVector<Book*> res;
+        QVector<Book*> tmp = this->books;
+        QVector<Book*> res;
 
-    std::sort(tmp.begin(), tmp.end(), byPages);
+        // sort by psges
+        std::sort(tmp.begin(), tmp.end(), byPages);
 
-    for (int i = tmp.size()-1; i >= 0; i--)
-    {
-        if (tmp[i]->illustrations() == true)
+        // check from the books with biggest number of pages to smallest if they have illustrations
+        for (int i = tmp.size()-1; i >= 0; i--)
         {
-            if (res.isEmpty())
-                res.push_back(tmp[i]);
-            else
-                if (tmp[i]->pages() == res[0]->pages())
+            if (tmp[i]->illustrations() == true)
+            {
+                if (res.isEmpty())
                     res.push_back(tmp[i]);
+                else
+                    if (tmp[i]->pages() == res[0]->pages())
+                        res.push_back(tmp[i]);
+            }
+            else
+                if (!res.isEmpty())
+                    break; // if we've found something already & next book either does not have pics or has less pages
         }
-        else
-            if (!res.isEmpty())
-                break;
-    }
 
-    this->foundBooks = res;
-    display(this->foundBooks);
+        this->foundBooks = res;
+        display(this->foundBooks);
+    }  catch (NoBooksException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
+    }
 }
 
 void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_triggered()
 {
-    // among books of same year find one with least pages & biggest edition
+    try {
+        if (this->books.isEmpty())
+            throw NoBooksException();
 
+        QVector<Book*> res;
+        int year = 99999;
+
+        if ((year = QInputDialog::getInt(this, "Enter year of publishment", \
+                                        "Among books of which year of publishment to look for?", 0, -999999, 2020)) > 2020)
+            return;
+
+        // find books of given year
+        QVector<Book*> tmp = this->books;
+        QVector<int> posToRemove;
+
+        for (int i = 0; i < tmp.size(); i++)
+        {
+            if (tmp[i]->yearOfPublishment() != year)
+                posToRemove.push_back(i);
+        }
+        int k = 0;
+        for (int i = 0; i < tmp.size(); i++)
+        {
+            if (k < posToRemove.size())
+            {
+                if (i != posToRemove[k])
+                {
+                    res.push_back(tmp[i]);
+                }
+                else
+                    k++;
+            }
+            else
+                res.push_back(tmp[i]);
+        }
+
+        tmp = res;
+        res.clear();
+
+        // sort by pages in ascending order
+        std::sort(tmp.begin(), tmp.end(), byPages);
+        // get book with minimal number of pages
+        res.push_back(tmp[0]);
+
+        // sort by edition in ascending order
+        std::sort(tmp.begin(), tmp.end(), byEditionSize);
+        // get book with maximum edition size
+        res.push_back(tmp[tmp.size()-1]);
+
+        display(res);
+        QMessageBox::information(this, "Books", QString("First displayed book has minimal number of pages\n") +
+                                 QString("Second one has maximum edition size"));
+    }  catch (NoBooksException& e) {
+        qDebug() << e.what();
+        QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
+    }
+}
+
+void DisplayWindow::removeBook()
+{
+    this->books.remove(this->posToDelete);
+    display(this->books);
+}
+
+void DisplayWindow::on_tableWidget_cellDoubleClicked(int row, int)
+{
+    QMessageBox* box = new QMessageBox(QMessageBox::Question,
+                                           "Delete book",
+                                           "Are you sure you want to delete this book?",
+                                           QMessageBox::Yes | QMessageBox::No,
+                                           this);
+
+    for (int i = 0; i < this->books.size(); i++)
+    {
+        if (books[i]->title() == books[row]->title())
+        {
+            posToDelete = i;
+            break;
+        }
+    }
+
+    QObject::connect(box->button(QMessageBox::Yes), &QAbstractButton::clicked, this, &DisplayWindow::removeBook);
+    box->show();
 }

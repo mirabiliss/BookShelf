@@ -34,7 +34,7 @@ void MainMenu::on_view_pushButton_clicked()
 
 void MainMenu::on_intro_pushButton_clicked()
 {
-    QMessageBox intro(QMessageBox::NoIcon, tr("Welcome!"), \
+    QMessageBox intro(QMessageBox::NoIcon, tr("About"), \
                       tr("We are glad to welcome you in our app!\nTo start, click on \"Get started!\" button. \n\
 To find all provided options you should open context menues in the opened window. \n\
 For more details read user guide."), QMessageBox::Ok);

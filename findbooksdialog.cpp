@@ -96,7 +96,7 @@ void FindBooksDialog::find()
 
                     for (int i = 0; i < toFind.size(); i++)
                     {
-                        if ((toFind[i]->author()->name() != author->name()) || (toFind[i]->author()->surname() != author->surname()))
+                        if (!(*toFind[i]->author() == *author))
                             posToRemove.push_back(i);
                     }
                     // store what satisfies the condition

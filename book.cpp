@@ -127,10 +127,10 @@ void Book::setEditionSize(const unsigned editionSize)
 
 QTextStream& operator<<(QTextStream& output, Book& book)
 {
-    output << book.author_->name() << " " << book.author_->surname() << ":\t'" << \
-              book.title() << "'\t" << book.yearOfPublishment() << "y.\t" << book.pages() << \
-            "pgs\tISBN: " << book.ISBN() << "\thas pics - " << book.illustrations() << \
-            "\thard cover - " << book.hardCover() << "\ted. size = " << book.editionSize() << "\n";
+    output << *book.author_->name() << " " << *book.author_->surname() << " \"" << \
+              *book.title() << "\" " << book.yearOfPublishment() << " " << book.pages() << \
+              " " << *book.ISBN() << " " << book.illustrations() << \
+              " " << book.hardCover() << " " << book.editionSize() << "\n";
     return output;
 }
 
