@@ -63,13 +63,15 @@ private slots:
     void showFindDialog(QVector<Book*>, QRect size);
     void showAddDialog(Book *book);
 
-    void removeBook();
+
+    void on_actionGroup_by_authors_triggered();
 
 private:
     void writeToFile(Book &book);
     bool readFromFile();
     void display(QVector<Book*> vec);
     QString getParameter();
+    void removeBook();
 
 private:
     Ui::DisplayWindow *ui;
@@ -78,6 +80,7 @@ private:
     FindBooksDialog *findDialog;
     AddBookDialog *addBookDialog;
     int posToDelete;
+    int posToDelFromFound;
 };
 
 #endif // DISPLAYWINDOW_H

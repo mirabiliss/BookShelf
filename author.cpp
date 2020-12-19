@@ -44,3 +44,8 @@ bool operator==(const Author& first, const Author& second)
         return true;
     return false;
 }
+
+bool operator<(const Author& first, const Author& second)
+{
+    return (*first.surname() < *second.surname());
+}

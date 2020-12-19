@@ -161,8 +161,7 @@ QTextStream& operator>>(QTextStream& input, Book& book)
         }
     }
 
-    input >> year >> pages >> *isbn >> illustrations
-        >> covers >> edSize;
+    input >> year >> pages >> *isbn >> illustrations >> covers >> edSize;
 
     Book b(new Author(name, surname), title, year, pages, isbn, illustrations, covers, edSize);
     book = b;
@@ -170,3 +169,11 @@ QTextStream& operator>>(QTextStream& input, Book& book)
     return input;
 }
 
+bool operator==(const Book& first, const Book& second)
+{
+    return ((first.author() == second.author()) && ((*first.title_) == (*second.title_)) && \
+            (first.yearOfPublishment() == second.yearOfPublishment()) &&\
+            (first.pages() == second.pages()) && ((*first.ISBN_) == (*second.ISBN_)) && \
+            (first.pages() == second.pages()) && (first.illustrations() == second.illustrations()) && \
+            (first.hardCover() == second.hardCover()));
+}

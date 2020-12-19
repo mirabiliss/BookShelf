@@ -512,6 +512,7 @@
     </property>
     <addaction name="actionBiggest_amount_of_pages"/>
     <addaction name="actionSmallest_amount_of_pages_biggest_edition_size"/>
+    <addaction name="actionGroup_by_authors"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -611,6 +612,11 @@
   <action name="actionSmallest_amount_of_pages_biggest_edition_size">
    <property name="text">
     <string>Least pages &amp; biggest edition size books among books of same year</string>
+   </property>
+  </action>
+  <action name="actionGroup_by_authors">
+   <property name="text">
+    <string>Group by authors</string>
    </property>
   </action>
  </widget>

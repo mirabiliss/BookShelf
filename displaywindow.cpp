@@ -59,6 +59,7 @@ void DisplayWindow::showAddDialog(Book *book)
 
     this->show();
     display(this->books);
+    this->foundBooks = this->books;
 }
 
 void DisplayWindow::display(QVector<Book*> vec)
@@ -180,7 +181,7 @@ void DisplayWindow::on_actionSave_triggered()
 
         file.close();
 
-        if (saved) throw SaveException();
+        if (!saved) throw SaveException();
     }  catch (SaveException& e) {
         qDebug() << e.what();
         QMessageBox::warning(this, "Ooooops...", "Seems like we couldn't save books to file\nPlease try again.");
@@ -249,6 +250,12 @@ bool byAuthor(Book* first, Book* second)
     return (first->author()->surname()->toStdString() < second->author()->surname()->toStdString());
 }
 
+struct byAuthorPred {
+    bool operator()(Author *lhs, Author *rhs) {
+        return *lhs < *rhs;
+    }
+};
+
 bool byTitle(Book* first, Book* second)
 {
     return (first->title()->toStdString() < second->title()->toStdString());
@@ -306,8 +313,6 @@ void DisplayWindow::on_actionSort_by_triggered()
     try {
         if (this->books.isEmpty())
             throw NoBooksException();
-
-        this->foundBooks = this->books;
 
         // getting parameter from user to be sorted by
         QString parameter = getParameter();
@@ -389,7 +394,7 @@ void DisplayWindow::on_actionBiggest_amount_of_pages_triggered()
         QVector<Book*> tmp = this->books;
         QVector<Book*> res;
 
-        // sort by psges
+        // sort by pages
         std::sort(tmp.begin(), tmp.end(), byPages);
 
         // check from the books with biggest number of pages to smallest if they have illustrations
@@ -422,15 +427,18 @@ void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_trigg
         if (this->books.isEmpty())
             throw NoBooksException();
 
+        QVector<Book*> tmp = this->books;
+        QVector<Book*> byPagesAscending;
+        QVector<Book*> byEdDescending;
         QVector<Book*> res;
-        int year = 99999;
+        QMap<Book*, int> bookPriority;
 
+        int year = 99999;
         if ((year = QInputDialog::getInt(this, "Enter year of publishment", \
-                                        "Among books of which year of publishment to look for?", 0, -999999, 2020)) > 2020)
+                    "Among books of which year of publishment to look for?", 0, -999999, 2020)) > 2020)
             return;
 
         // find books of given year
-        QVector<Book*> tmp = this->books;
         QVector<int> posToRemove;
 
         for (int i = 0; i < tmp.size(); i++)
@@ -438,6 +446,7 @@ void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_trigg
             if (tmp[i]->yearOfPublishment() != year)
                 posToRemove.push_back(i);
         }
+
         int k = 0;
         for (int i = 0; i < tmp.size(); i++)
         {
@@ -457,28 +466,57 @@ void DisplayWindow::on_actionSmallest_amount_of_pages_biggest_edition_size_trigg
         tmp = res;
         res.clear();
 
-        // sort by pages in ascending order
+        // sort by pages
         std::sort(tmp.begin(), tmp.end(), byPages);
-        // get book with minimal number of pages
-        res.push_back(tmp[0]);
+        byPagesAscending = tmp;
 
-        // sort by edition in ascending order
+        for (int i = 0; i < byPagesAscending.size(); i++)
+        {
+            bookPriority[byPagesAscending[i]] = i;
+        }
+
+        // sort by edition
         std::sort(tmp.begin(), tmp.end(), byEditionSize);
-        // get book with maximum edition size
-        res.push_back(tmp[tmp.size()-1]);
+        byEdDescending = tmp;
 
-        display(res);
-        QMessageBox::information(this, "Books", QString("First displayed book has minimal number of pages\n") +
-                                 QString("Second one has maximum edition size"));
+        for (int i = 0; i < byEdDescending.size(); i++)
+        {
+            bookPriority[byPagesAscending[i]] += i;
+        }
+
+        int min = tmp.size() * 2;
+        // finding book with least value - biggest priority
+        for (auto el = bookPriority.begin(); el != bookPriority.end(); el++)
+        {
+            if (el.value() < min)
+            {
+                min = el.value();
+            }
+        }
+        // saving book with biggest priority
+        for (auto el = bookPriority.begin(); el != bookPriority.end(); el++)
+        {
+            if (el.value() == min)
+            {
+                res.push_back(el.key());
+                break;
+            }
+        }
+
+        this->foundBooks = res;
+        display(this->foundBooks);
+
     }  catch (NoBooksException& e) {
         qDebug() << e.what();
         QMessageBox::warning(this, "Ooooops...", "Seems like no books are available\nPlease add some books first.");
     }
+
 }
 
 void DisplayWindow::removeBook()
 {
     this->books.remove(this->posToDelete);
+    this->foundBooks.remove(this->posToDelFromFound);
     display(this->books);
 }
 
@@ -489,10 +527,11 @@ void DisplayWindow::on_tableWidget_cellDoubleClicked(int row, int)
                                            "Are you sure you want to delete this book?",
                                            QMessageBox::Yes | QMessageBox::No,
                                            this);
+    this->posToDelFromFound = row;
 
     for (int i = 0; i < this->books.size(); i++)
     {
-        if (books[i]->title() == books[row]->title())
+        if (this->books[i] == this->foundBooks[row])
         {
             posToDelete = i;
             break;
@@ -501,4 +540,28 @@ void DisplayWindow::on_tableWidget_cellDoubleClicked(int row, int)
 
     QObject::connect(box->button(QMessageBox::Yes), &QAbstractButton::clicked, this, &DisplayWindow::removeBook);
     box->show();
+}
+
+void DisplayWindow::on_actionGroup_by_authors_triggered()
+{
+    std::map<Author*, QVector<Book*>, byAuthorPred> authorsBooks;
+    QVector<Book*> res;
+
+    for (int i = 0; i < this->books.size(); i++)
+    {
+        authorsBooks[books[i]->author()].push_back(books[i]);
+    }
+
+    for (auto el = authorsBooks.begin(); el != authorsBooks.end(); el++)
+    {
+        std::sort(el->second.begin(), el->second.end(), byPages);
+    }
+
+    for (auto el = authorsBooks.begin(); el != authorsBooks.end(); el++)
+    {
+        res += el->second;
+    }
+
+    this->foundBooks = res;
+    display(this->foundBooks);
 }

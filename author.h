@@ -11,7 +11,7 @@ public:
     Author(Author& other);
 
     friend bool operator==(const Author& first, const Author& second);
-
+    friend bool operator<(const Author& first, const Author& second);
     QString* name() const;
     void setName(QString* name);
 
